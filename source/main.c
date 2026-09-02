@@ -43,8 +43,8 @@ int main(int argc, char **argv)
     memcpy(gfxMain, clangTiles, clangTilesLen);
     memcpy(SPRITE_PALETTE, clangPal, clangPalLen);
 
-    int x = 128 - 16;
-    int y = 92 - 16;
+    int x = 128 - 32;
+    int y = 92 - 32;
 
     oamSet(&oamMain, 0, x, y, 0, 0, SpriteSize_32x32, SpriteColorFormat_16Color, gfxMain, 0, true, false, false, false, false);
 
