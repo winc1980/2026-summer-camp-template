@@ -2,6 +2,7 @@
 #include "nds/arm9/background.h"
 #include "nds/arm9/input.h"
 #include "nds/arm9/sprite.h"
+#include "nds/arm9/trig_lut.h"
 #include "nds/arm9/video.h"
 #include <nds.h>
 #include <stdbool.h>
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
     int x = 128 - 16;
     int y = 92 - 16;
 
-    oamSet(&oamMain, 0, x, y, 0, 0, SpriteSize_32x32, SpriteColorFormat_16Color, gfxMain, -1, false, false, false, false, false);
+    oamSet(&oamMain, 0, x, y, 0, 0, SpriteSize_32x32, SpriteColorFormat_16Color, gfxMain, 0, true, false, false, false, false);
 
 
     // 下画面をテキストコンソールにする
@@ -56,6 +57,10 @@ int main(int argc, char **argv)
     printf("Hello, DS!\n");
     printf("Hello, C lang!\n");
 
+
+    int angle = 0;
+    int scale = 0;
+
     while (1)
     {
         // 次のフレームまで待つ（60FPS）
@@ -63,18 +68,26 @@ int main(int argc, char **argv)
 
         // 座標を更新
         oamSetXY(&oamMain, 0, x, y);
-        oamRotateScale(&oamMain, 0, 0, 1, 2);
+        // 回転・拡大縮小
+        oamRotateScale(&oamMain, 0, degreesToAngle(angle), (1 << 8) + scale * (1 << 3), (1 << 8) + scale * (1 << 3));
+        // 再描画
         oamUpdate(&oamMain);
 
-        // キーを押したら移動
         scanKeys();
 
         u16 keys_held = keysHeld();
 
+        // キーを押したら移動
         if (keys_held & KEY_UP) y--;
         if (keys_held & KEY_LEFT) x--;
         if (keys_held & KEY_DOWN) y++;
         if (keys_held & KEY_RIGHT) x++;
+
+        // キーを押したら回転・拡大縮小
+        if (keys_held & KEY_A) angle--;
+        if (keys_held & KEY_B) scale++;
+        if (keys_held & KEY_X) scale--;
+        if (keys_held & KEY_Y) angle++;
     }
     return 0;
 }
